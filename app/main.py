@@ -4,14 +4,16 @@ import json
 from pathlib import Path
 
 from app.config import Settings
+from app.get_news import update_sources_json
 from app.discord_sender import send_long_message
 from app.fetcher import FetchError, fetch_source
 from app.llm_client import LLMClient
 from app.pipeline import run_pipeline
+from app.config import DATA_DIR
+from app.config import SOURCES_PATH
 
-
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-SOURCES_PATH = DATA_DIR / "sources.json"
+# DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+# SOURCES_PATH = DATA_DIR / "sources.json"
 
 
 def load_sources() -> list[dict]:
@@ -20,6 +22,9 @@ def load_sources() -> list[dict]:
 
 
 def main() -> None:
+    # ① Googleニュースから最新記事を取得して sources.json を更新
+    update_sources_json()
+    
     settings = Settings.from_env()
     llm = LLMClient(
         api_key=settings.openai_api_key,
